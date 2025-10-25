@@ -1,35 +1,50 @@
-from flask import Flask, render_template_string, request
-import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import urllib.parse
 from aes import aes_encrypt, aes_decrypt
 
-app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(__file__)
-with open(os.path.join(BASE_DIR, "templates", "index.html"), "r", encoding="utf-8") as f:
-    HTML = f.read()
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    result = "" 
-    if request.method == "POST":
-        text = request.form.get("text","")
-        key = request.form.get("key","")
-        action = request.form.get("action","")
-        if text and key:
+class MyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/":
+            self.send_response(200)
+            self.send_header("Content-type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open("templates/index.html", "r", encoding="utf-8") as f:
+                self.wfile.write(f.read().encode("utf-8"))
+        elif self.path.startswith("/encrypt"):
+            query = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(query)
+            text = params.get("text", [""])[0]
+            key = params.get("key", [""])[0]
             try:
-                if action=="encrypt":
-                    result = aes_encrypt(text,key)
-                elif action=="decrypt":
-                    result = aes_decrypt(text,key)
+                result = aes_encrypt(text, key)
             except Exception as e:
                 result = f"Lỗi: {e}"
+            self._send_text(result)
+        elif self.path.startswith("/decrypt"):
+            query = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(query)
+            text = params.get("text", [""])[0]
+            key = params.get("key", [""])[0]
+            try:
+                result = aes_decrypt(text, key)
+            except Exception as e:
+                result = f"Lỗi: {e}"
+            self._send_text(result)
         else:
-            result = "Vui lòng nhập chuỗi và khóa!"
-    return render_template_string(HTML, result=result, request=request)
+            self.send_response(404)
+            self.end_headers()
 
-@app.route("/favicon.ico")
-def favicon():
-    return "", 204
+    def _send_text(self, text):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(text.encode("utf-8"))
 
-if __name__=="__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+if __name__ == "__main__":
+    server = HTTPServer(("0.0.0.0", 5000), MyHandler)
+    print("Server đang chạy tại http://localhost:5000")
+    server.serve_forever()

@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
     <title>AES</title>
     <style>
@@ -24,9 +23,8 @@
             color: #333;
         }
 
-        textarea {
+        textarea, input[type=password], .result-box {
             width: 96%;
-            height: 120px;
             padding: 10px;
             border: 2px solid #333;
             border-radius: 6px;
@@ -34,16 +32,19 @@
             font-size: 14px;
         }
 
-        input[type=password] {
-            width: 97%;
-            padding: 6px;
-            margin: 5px 0 10px 0;
-            border: 2px solid #333;
-            border-radius: 4px;
-            font-size: 14px;
+        textarea {
+            height: 120px;
+        }
+
+        .result-box {
+            height: 120px;
+            margin-top: 10px;
+            background-color: #eaeaea;
+            overflow-wrap: break-word;
         }
 
         button {
+            margin-top: 20px;
             padding: 8px 16px;
             margin-right: 10px;
             border: none;
@@ -57,35 +58,37 @@
             background-color: #555;
         }
 
-        .result-box {
-            width: 96%;
-            height: 120px;
-            margin-top: 10px;
-            padding: 10px;
-            border: 2px solid #333;
-            border-radius: 6px;
-            background-color: #eaeaea;
-            font-family: Arial;
-            font-size: 14px;
-            overflow-wrap: break-word;
+        #key{
+            margin-top: 20px;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <h2>MÃ HÓA LƯỢNG TỬ - AES</h2>
-        <form method="post">
-            <textarea name="text" placeholder="Nhập chuỗi...">{{ request.form.text or '' }}</textarea><br>
-            <input type="password" name="key" placeholder="Nhập mật khẩu" value="{{ request.form.key or '' }}"><br>
-            <button name="action" value="encrypt">Mã hóa</button>
-            <button name="action" value="decrypt">Giải mã</button>
-        </form>
-        {% if result %}
-        <h3>Kết quả:</h3>
-        <div class="result-box">{{ result }}</div>
-        {% endif %}
-    </div>
-</body>
+        <h2>MÃ HÓA - AES</h2>
+        <textarea id="text" placeholder="Nhập chuỗi..."></textarea><br>
+        <input type="password" id="key" placeholder="Nhập mật khẩu"><br>
+        <button onclick="encrypt()">Mã hóa</button>
+        <button onclick="decrypt()">Giải mã</button>
 
+        <h3>Kết quả:</h3>
+        <div class="result-box" id="result"></div>
+    </div>
+
+    <script>
+        async function encrypt() {
+            const text = document.getElementById("text").value;
+            const key = document.getElementById("key").value;
+            const res = await fetch("/encrypt?text=" + encodeURIComponent(text) + "&key=" + encodeURIComponent(key));
+            document.getElementById("result").innerText = await res.text();
+        }
+
+        async function decrypt() {
+            const text = document.getElementById("text").value;
+            const key = document.getElementById("key").value;
+            const res = await fetch("/decrypt?text=" + encodeURIComponent(text) + "&key=" + encodeURIComponent(key));
+            document.getElementById("result").innerText = await res.text();
+        }
+    </script>
+</body>
 </html>
