@@ -5,31 +5,34 @@
     <style>
         body {
             font-family: Arial;
-            background-color: #f0f0f5;
+            background-color: #000000; /* đen thay cho nền sáng */
+            color: white; /* chữ trắng */
         }
 
         .container {
             width: 650px;
             margin: 50px auto;
             padding: 20px;
-            border: 3px solid #333;
+            border: 3px solid #fff; /* viền trắng */
             border-radius: 10px;
-            background: white;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            background: #000000; /* nền container đen hơn */
+            box-shadow: 0 0 30px rgb(255, 255, 255);
         }
 
         h2 {
             text-align: center;
-            color: #333;
+            color: #fff;
         }
 
         textarea, input[type=password], .result-box {
             width: 96%;
             padding: 10px;
-            border: 2px solid #333;
+            border: 2px solid #fff; /* viền trắng */
             border-radius: 6px;
             font-family: Arial;
             font-size: 14px;
+            background-color: #000000; /* nền input tối */
+            color: white; /* chữ trắng */
         }
 
         textarea {
@@ -39,7 +42,7 @@
         .result-box {
             height: 120px;
             margin-top: 10px;
-            background-color: #eaeaea;
+            background-color: #000000;
             overflow-wrap: break-word;
         }
 
@@ -49,16 +52,20 @@
             margin-right: 10px;
             border: none;
             border-radius: 4px;
-            background-color: #333;
-            color: white;
+            background-color: white; /* nút trắng */
+            color: black; /* chữ đen */
             cursor: pointer;
+            font-weight: bold;
         }
+
+
+
 
         button:hover {
-            background-color: #555;
+            background-color: #2fff00; /* hover xám nhạt */
         }
 
-        #key{
+        #key {
             margin-top: 20px;
         }
     </style>
@@ -68,8 +75,8 @@
         <h2>MÃ HÓA - AES</h2>
         <textarea id="text" placeholder="Nhập chuỗi..."></textarea><br>
         <input type="password" id="key" placeholder="Nhập mật khẩu"><br>
-        <button onclick="encrypt()">Mã hóa</button>
-        <button onclick="decrypt()">Giải mã</button>
+        <button id="ma" onclick="encrypt()">Mã hóa</button>
+        <button id="giai" onclick="decrypt()">Giải mã</button>
 
         <h3>Kết quả:</h3>
         <div class="result-box" id="result"></div>
