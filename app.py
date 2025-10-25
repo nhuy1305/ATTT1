@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import urllib.parse
 from aes import aes_encrypt, aes_decrypt
-
+import socket
 
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
@@ -44,7 +44,17 @@ class MyHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(text.encode("utf-8"))
 
+
+
 if __name__ == "__main__":
+    # Lấy IP LAN tự động của máy
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+
     server = HTTPServer(("0.0.0.0", 5000), MyHandler)
-    print("Server đang chạy tại http://localhost:5000")
+    print(f"Server đang chạy tại:")
+    print(f"  - Máy tính: http://localhost:5000")
+    print(f"  - Thiết bị khác (cùng Wi-Fi): http://{local_ip}:5000")
+
     server.serve_forever()
+
